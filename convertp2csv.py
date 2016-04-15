@@ -5,6 +5,7 @@ import base64
 
 postcols = ['PostTypeId','AcceptedAnswerId','CreationDate','Score','ViewCount','Body','OwnerUserId','LastEditorUserId','LastEditDate','LastActivityDate','Title','Tags','AnswerCount','CommentCount','FavoriteCount']
 commentcols = ['Id','PostId','Score','Text','CreationDate','UserId']
+posthistcols = ['Id','PostHistoryTypeId','PostId','RevisionGUID','CreationDate','UserId', 'Text']
 
 def documents(post,cols):
     for doc in post.iterfind('.//row'):
@@ -40,5 +41,8 @@ print '~~~ xml -> csv ~~~\n'
 #ptree = ET.parse('Posts.xml')
 #xml2csv(ptree,'posts',postcols)
 
+#ptree = ET.parse('Comments.xml')
+#xml2csv(ptree,'comments',commentcols)
+
 ptree = ET.parse('Comments.xml')
-xml2csv(ptree,'comments',commentcols)
+xml2csv(ptree,'posthistory',commentcols)

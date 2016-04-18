@@ -8,6 +8,8 @@ commentcols = ['Id','PostId','Score','Text','CreationDate','UserId']
 posthistcols = ['Id','PostHistoryTypeId','PostId','RevisionGUID','CreationDate','UserId', 'Text']
 usercols = ['Id','Reputation','CreationDate','DisplayName','LastAccessDate','WebsiteUrl', 'Location','AboutMe','Views','UpVotes','DownVotes','Age','AccountId']
 
+textcols =  ['Body','Title','Text','AboutMe','Location']
+
 def documents(post,cols):
     for doc in post.iterfind('.//row'):
         row = OrderedDict()
@@ -16,7 +18,7 @@ def documents(post,cols):
                 row[c] = ''
             else:
                 val = doc.attrib[c].encode('utf-8')
-                if c in ['Body','Title','Text','AboutMe','Location']:
+                if c in textcols:
                     val = base64.b64encode(val)
                 row[c] = val.replace('\n','').replace('\r','').replace('\r\n','')
         yield row

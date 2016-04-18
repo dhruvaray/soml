@@ -3,10 +3,10 @@ import xml.etree.ElementTree as ET
 from collections import OrderedDict
 import base64
 
-postcols = ['PostTypeId','AcceptedAnswerId','CreationDate','Score','ViewCount','Body','OwnerUserId','LastEditorUserId','LastEditDate','LastActivityDate','Title','Tags','AnswerCount','CommentCount','FavoriteCount']
+postcols = ['Id','PostTypeId','ParentId','AcceptedAnswerId','CreationDate','Score','ViewCount','Body','OwnerUserId','LastEditorUserId','LastEditorDisplayName','LastEditDate','LastActivityDate','CommunityOwnedDate','ClosedDate','Title','Tags','AnswerCount','CommentCount','FavoriteCount']
 commentcols = ['Id','PostId','Score','Text','CreationDate','UserId']
-posthistcols = ['Id','PostHistoryTypeId','PostId','RevisionGUID','CreationDate','UserId', 'Text']
-usercols = ['Id','Reputation','CreationDate','DisplayName','LastAccessDate','WebsiteUrl', 'Location','AboutMe','Views','UpVotes','DownVotes','Age','AccountId']
+posthistcols = ['Id','PostHistoryTypeId','PostId','RevisionGUID','CreationDate','UserId','UserDisplayName','Comment','Text','CloseReasonId']
+usercols = ['Id','Reputation','CreationDate','DisplayName','EmailHash','LastAccessDate','WebsiteUrl', 'Location','AboutMe','Views','UpVotes','DownVotes','Age']
 
 textcols =  ['Body','Title','Text','AboutMe','Location']
 
@@ -44,11 +44,11 @@ print '~~~ xml -> csv ~~~\n'
 #ptree = ET.parse('Posts.xml')
 #xml2csv(ptree,'posts',postcols)
 
-#ptree = ET.parse('Comments.xml')
-#xml2csv(ptree,'comments',commentcols)
+#tree = ET.parse('Comments.xml')
+#ml2csv(ptree,'comments',commentcols)
 
-#ptree = ET.parse('Comments.xml')
-#xml2csv(ptree,'posthistory',commentcols)
+#tree = ET.parse('PostHistory.xml')
+#ml2csv(ptree,'posthistory',commentcols)
 
 ptree = ET.parse('Users.xml')
 xml2csv(ptree,'users',usercols)

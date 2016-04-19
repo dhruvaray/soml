@@ -9,7 +9,7 @@ columns['comments'] = ['Id','PostId','Score','Text','CreationDate','UserId']
 columns['posthistory'] = ['Id','PostHistoryTypeId','PostId','RevisionGUID','CreationDate','UserId','UserDisplayName','Comment','Text','CloseReasonId']
 columns['users'] = ['Id','Reputation','CreationDate','DisplayName','EmailHash','LastAccessDate','WebsiteUrl', 'Location','AboutMe','Views','UpVotes','DownVotes','Age']
 
-textcols =  ['Body','Title','Text','AboutMe','Location']
+textcols =  ['Body','Title','Text','AboutMe','Location','Comment']
 
 #TODO : Stream v/s load whole document
 def documents(post,cols):
@@ -33,19 +33,8 @@ def xml2csv(root, type, headers):
             print 'record #' + `count`
             f.write(','.join(p.values()) + '\n')
 
-    print '~~~ Sample file generation ~~~\n'
-
-    with open(type + '.sample.csv','w') as f:
-        f.write(','.join(headers) + '\n')
-        for count, p in enumerate(documents(root,headers)):
-            f.write(','.join(p.values()) + '\n')
-            if count > SAMPLE_SIZE:
-                break
-
-
-SAMPLE_SIZE = 1000
 #sources = ['Posts','Comments','PostHistory','Users']
-sources = ['Posts']
+sources = ['PostHistory']
 
 for source in sources:
     print 'processing - ' + source

@@ -39,11 +39,13 @@ def xml2csv(root, type, headers):
         f.write(','.join(headers) + '\n')
         for count, p in enumerate(documents(root,headers)):
             f.write(','.join(p.values()) + '\n')
-            if count > 100:
+            if count > SAMPLE_SIZE:
                 break
 
 
-sources = ['Posts','Comments','PostHistory','Users']
+SAMPLE_SIZE = 1000
+#sources = ['Posts','Comments','PostHistory','Users']
+sources = ['Posts']
 
 for source in sources:
     print 'processing - ' + source

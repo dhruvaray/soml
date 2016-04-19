@@ -3,13 +3,15 @@ import xml.etree.ElementTree as ET
 from collections import OrderedDict
 import base64
 
-postcols = ['Id','PostTypeId','ParentId','AcceptedAnswerId','CreationDate','Score','ViewCount','Body','OwnerUserId','LastEditorUserId','LastEditorDisplayName','LastEditDate','LastActivityDate','CommunityOwnedDate','ClosedDate','Title','Tags','AnswerCount','CommentCount','FavoriteCount']
-commentcols = ['Id','PostId','Score','Text','CreationDate','UserId']
-posthistcols = ['Id','PostHistoryTypeId','PostId','RevisionGUID','CreationDate','UserId','UserDisplayName','Comment','Text','CloseReasonId']
-usercols = ['Id','Reputation','CreationDate','DisplayName','EmailHash','LastAccessDate','WebsiteUrl', 'Location','AboutMe','Views','UpVotes','DownVotes','Age']
+columns = {}
+columns['posts'] = ['Id','PostTypeId','ParentId','AcceptedAnswerId','CreationDate','Score','ViewCount','Body','OwnerUserId','LastEditorUserId','LastEditorDisplayName','LastEditDate','LastActivityDate','CommunityOwnedDate','ClosedDate','Title','Tags','AnswerCount','CommentCount','FavoriteCount']
+columns['comments'] = ['Id','PostId','Score','Text','CreationDate','UserId']
+columns['posthistory'] = ['Id','PostHistoryTypeId','PostId','RevisionGUID','CreationDate','UserId','UserDisplayName','Comment','Text','CloseReasonId']
+columns['users'] = ['Id','Reputation','CreationDate','DisplayName','EmailHash','LastAccessDate','WebsiteUrl', 'Location','AboutMe','Views','UpVotes','DownVotes','Age']
 
 textcols =  ['Body','Title','Text','AboutMe','Location']
 
+#TODO : Stream v/s load whole document
 def documents(post,cols):
     for doc in post.iterfind('.//row'):
         row = OrderedDict()
@@ -40,15 +42,10 @@ def xml2csv(root, type, headers):
             if count > 100:
                 break
 
-print '~~~ xml -> csv ~~~\n'
-#ptree = ET.parse('Posts.xml')
-#xml2csv(ptree,'posts',postcols)
 
-#tree = ET.parse('Comments.xml')
-#ml2csv(ptree,'comments',commentcols)
+sources = ['Posts','Comments','PostHistory','Users']
 
-#tree = ET.parse('PostHistory.xml')
-#ml2csv(ptree,'posthistory',commentcols)
-
-ptree = ET.parse('Users.xml')
-xml2csv(ptree,'users',usercols)
+for source in sources:
+    print 'processing - ' + source
+    root = ET.parse(source + '.xml')
+    xml2csv(root,source.lower(),columns[source.lower()])

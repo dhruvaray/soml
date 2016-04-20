@@ -1,8 +1,11 @@
 import pandas as pd
 from collections import OrderedDict
-import base64
-
+import re
+from bs4 import BeautifulSoup 
+import warnings
 import xml.etree.cElementTree as ET
+
+warnings.filterwarnings('error')
 
 columns = {}
 columns['posts'] = ['Id','PostTypeId','ParentId','AcceptedAnswerId','CreationDate','Score','ViewCount','Body','OwnerUserId','LastEditorUserId','LastEditorDisplayName','LastEditDate','LastActivityDate','CommunityOwnedDate','ClosedDate','Title','Tags','AnswerCount','CommentCount','FavoriteCount']
@@ -10,7 +13,7 @@ columns['comments'] = ['Id','PostId','Score','Text','CreationDate','UserId']
 columns['posthistory'] = ['Id','PostHistoryTypeId','PostId','RevisionGUID','CreationDate','UserId','UserDisplayName','Comment','Text','CloseReasonId']
 columns['users'] = ['Id','Reputation','CreationDate','DisplayName','EmailHash','LastAccessDate','WebsiteUrl', 'Location','AboutMe','Views','UpVotes','DownVotes','Age']
 
-textcols =  ['Body','Title','Text','AboutMe','Location','Comment']
+textcols =  ['Body','Title','Text','AboutMe','Location','Comment','WebsiteUrl']
 
 #TODO : Stream v/s load whole document
 def documents(context,cols):
@@ -26,9 +29,15 @@ def documents(context,cols):
                     row[c] = ''
                 else:
                     val = doc[c].encode('utf-8')
+
                     if c in textcols:
-                        val = base64.b64encode(val)
-                    row[c] = val.replace('\n','').replace('\r','').replace('\r\n','')
+                        try:
+                            val = re.sub("[^a-zA-Z]"," ", BeautifulSoup(val,"lxml").get_text().encode('utf-8')).lower()
+                        except UserWarning:
+                            pass
+
+
+                    row[c] = val
             elem.clear()        
             yield row
 
@@ -46,7 +55,7 @@ sources = ['Posts','Comments','PostHistory','Users']
 #sources = ['Users']
 
 for source in sources:
-    print 'processing : ' + source
+    print 'processing : ' + source,
     root = iter(ET.iterparse(source + '.xml', events=("start", "end")))
     xml2csv(root,source.lower(),columns[source.lower()])
 

@@ -1,9 +1,0 @@
-pandas
-base64
-math
-re
-gensim
-nltk
-bs4
-matplotlib
-numpy

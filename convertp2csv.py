@@ -5,8 +5,12 @@ from bs4 import BeautifulSoup
 import warnings
 import xml.etree.cElementTree as ET
 import gzip
+import os
 
 warnings.filterwarnings('error')
+DATA = 'data'
+if not os.path.exists(DATA):
+    os.makedirs(DATA)
 
 columns = {}
 columns['posts'] = ['Id','PostTypeId','ParentId','AcceptedAnswerId','CreationDate','Score','ViewCount','Body','OwnerUserId','LastEditorUserId','LastEditorDisplayName','LastEditDate','LastActivityDate','CommunityOwnedDate','ClosedDate','Title','Tags','AnswerCount','CommentCount','FavoriteCount']
@@ -35,15 +39,15 @@ def documents(context,cols):
                         try:
                             val = re.sub("[^a-zA-Z]"," ", BeautifulSoup(val,"lxml").get_text().encode('utf-8')).lower()
                         except UserWarning:
-                            pass
-
+                            if ',' in val: #hacky
+                                val = val.replace(',','')
 
                     row[c] = val
             elem.clear()        
             yield row
 
 def xml2csv(root, type, headers):
-    with gzip.open(type +'.csv.gz','w') as f:
+    with gzip.open(DATA + '/' + type +'.csv.gz','w') as f:
         f.write(','.join(headers) + '\n')
         tc = 0
         for count, p in enumerate(documents(root,headers)):
@@ -54,7 +58,6 @@ def xml2csv(root, type, headers):
         print '...' + `int(tc/1000)` + 'k'
 
 sources = ['Posts','Comments','PostHistory','Users']
-#sources = ['Users']
 
 for source in sources:
     print 'processing : ' + source

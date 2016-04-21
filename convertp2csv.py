@@ -4,6 +4,7 @@ import re
 from bs4 import BeautifulSoup 
 import warnings
 import xml.etree.cElementTree as ET
+import gzip
 
 warnings.filterwarnings('error')
 
@@ -42,20 +43,21 @@ def documents(context,cols):
             yield row
 
 def xml2csv(root, type, headers):
-    with open(type +'.csv','w') as f:
+    with gzip.open(type +'.csv.gz','w') as f:
         f.write(','.join(headers) + '\n')
         tc = 0
-        print '...',
         for count, p in enumerate(documents(root,headers)):
             tc = count
             f.write(','.join(p.values()) + '\n')
-        print tc
+            if count % 10000 == 0:
+                print '...1k'
+        print '...' + `int(tc/1000)` + 'k'
 
 sources = ['Posts','Comments','PostHistory','Users']
 #sources = ['Users']
 
 for source in sources:
-    print 'processing : ' + source,
+    print 'processing : ' + source
     root = iter(ET.iterparse(source + '.xml', events=("start", "end")))
     xml2csv(root,source.lower(),columns[source.lower()])
 

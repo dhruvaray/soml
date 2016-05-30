@@ -8,9 +8,14 @@ import gzip
 import os
 
 warnings.filterwarnings('error')
-DATA = 'data'
-if not os.path.exists(DATA):
-    os.makedirs(DATA)
+
+OUTPUT = 'output'
+INPUT  = 'input'
+SITE = 'aviation'
+
+for dir in [INPUT,OUTPUT]:
+   if not os.path.exists(dir):
+      os.makedirs(dir)
 
 columns = {}
 columns['posts'] = ['Id','PostTypeId','ParentId','AcceptedAnswerId','CreationDate','Score','ViewCount','Body','OwnerUserId','LastEditorUserId','LastEditorDisplayName','LastEditDate','LastActivityDate','CommunityOwnedDate','ClosedDate','Title','Tags','AnswerCount','CommentCount','FavoriteCount']
@@ -20,7 +25,6 @@ columns['users'] = ['Id','Reputation','CreationDate','DisplayName','EmailHash','
 
 textcols =  ['Body','Title','Text','AboutMe','Location','Comment','WebsiteUrl']
 
-#TODO : Stream v/s load whole document
 def documents(context,cols):
 
     for event, elem in context:
@@ -46,8 +50,8 @@ def documents(context,cols):
             elem.clear()        
             yield row
 
-def xml2csv(root, type, headers):
-    with gzip.open(DATA + '/' + type +'.csv.gz','w') as f:
+def xml2csv(root, site, type, headers):
+    with gzip.open(OUTPUT + '/' + site + '/' + type +'.csv.gz','w') as f:
         f.write(','.join(headers) + '\n')
         tc = 0
         for count, p in enumerate(documents(root,headers)):
@@ -61,6 +65,6 @@ sources = ['Posts','Comments','PostHistory','Users']
 
 for source in sources:
     print 'processing : ' + source
-    root = iter(ET.iterparse(source + '.xml', events=("start", "end")))
-    xml2csv(root,source.lower(),columns[source.lower()])
+    root = iter(ET.iterparse(INPUT + '/' + SITE + '/' + source + '.xml', events=("start", "end")))
+    xml2csv(root,SITE,source.lower(),columns[source.lower()])
 

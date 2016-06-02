@@ -11,7 +11,6 @@ warnings.filterwarnings('error')
 
 OUTPUT = 'output'
 INPUT  = 'input'
-SITE = 'aviation'
 
 for dir in [INPUT,OUTPUT]:
    if not os.path.exists(dir):
@@ -63,8 +62,28 @@ def xml2csv(root, site, type, headers):
 
 sources = ['Posts','Comments','PostHistory','Users']
 
-for source in sources:
-    print 'processing : ' + source
-    root = iter(ET.iterparse(INPUT + '/' + SITE + '/' + source + '.xml', events=("start", "end")))
-    xml2csv(root,SITE,source.lower(),columns[source.lower()])
+def process(path):
+    for (dirpath, dirnames, filenames) in os.walk(path):
+        for dirname in dirnames:
+            processed = INPUT + '/' + dirname + '/.processed'
+            if not os.path.exists(processed):
+                for source in sources:
+                    print 'processing : ' + source + ' for site : ' + dirname 
+                    site = dirname
+                    name = INPUT + '/' + site + '/' + source + '.xml'
+                    if os.path.exists(name):
+                        output = OUTPUT + '/' + site
+                        if not os.path.exists(output):
+                            os.makedirs(output)
+                        root = iter(ET.iterparse(name, events=("start", "end")))
+                        xml2csv(root,site,source.lower(),columns[source.lower()])
 
+                open(processed, 'a').close()
+            else:
+                print 'skipping ' + dirname + '...'
+                
+
+if __name__ == "__main__":
+    start = os.getcwd() + '/' + INPUT
+    print(start)
+    process(start)

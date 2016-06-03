@@ -1,3 +1,6 @@
 .idea
 .ipynb_checkpoints
 *.xml
+input
+*.pyc
+word_cloud-master
